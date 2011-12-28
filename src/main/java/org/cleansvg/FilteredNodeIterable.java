@@ -19,9 +19,8 @@ package org.cleansvg;
 import java.util.Iterator;
 import com.google.common.collect.AbstractIterator;
 import com.google.inject.Inject;
-import org.w3c.dom.Document;
+import org.w3c.dom.*;
 import org.w3c.dom.traversal.*;
-import org.w3c.dom.Node;
 
 class FilteredNodeIterable implements Iterable<Node> {
     private final NodeIterator iterator;

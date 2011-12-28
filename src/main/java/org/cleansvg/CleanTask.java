@@ -99,7 +99,8 @@ class CleanTask implements Task {
         final TranscoderInput input = new TranscoderInput(document);
         final TranscoderOutput output = new TranscoderOutput(writer);
         transcoder.addTranscodingHint(SVGTranscoder.KEY_TABULATION_WIDTH, 0);
-        transcoder.addTranscodingHint(SVGTranscoder.KEY_DOCUMENT_WIDTH, Integer.MAX_VALUE);
+        transcoder.addTranscodingHint(SVGTranscoder.KEY_DOCUMENT_WIDTH,
+                Integer.MAX_VALUE);
         // transcoder.addTranscodingHint(SVGTranscoder.KEY_FORMAT,
         // SVGTranscoder.VALUE_FORMAT_OFF);
         transcoder.transcode(input, output);

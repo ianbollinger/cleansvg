@@ -32,49 +32,49 @@ class OptionsModule extends AbstractModule {
             usage = "file to write the output")
     private File output;
 
-    @Option(name = "-p", aliases = "--precision",
-            usage = "precision used for coordinates")
-    private int precision = 8;
+    // @Option(name = "-p", aliases = "--precision",
+    //         usage = "precision used for coordinates")
+    // private int precision = 8;
 
-    @Option(name = "-c", aliases = "--compact-paths",
-            usage = "compacts path data")
-    private boolean compactPaths;
+    // @Option(name = "-c", aliases = "--compact-paths",
+    //         usage = "compacts path data")
+    // private boolean compactPaths;
 
-    @Option(name = "-r", aliases = "--relativize",
-            usage = "make path coordinates relative")
-    private boolean relativize;
+    // @Option(name = "-r", aliases = "--relativize",
+    //         usage = "make path coordinates relative")
+    // private boolean relativize;
 
     @Option(name = "-h", aliases = {"-?", "--help"},
             usage = "display this help and exit")
     private boolean help;
 
-    @Option(name = "-d", aliases = "--remove-defaults",
-            usage = "remove default attribute values")
-    private boolean removeDefaults;
+    // @Option(name = "-d", aliases = "--remove-defaults",
+    //         usage = "remove default attribute values")
+    // private boolean removeDefaults;
 
-    @Option(name = "-s", aliases = "--style-attrs",
-            usage = "convert style attributes")
-    private boolean styleAttrs;
+    // @Option(name = "-s", aliases = "--style-attrs",
+    //         usage = "convert style attributes")
+    // private boolean styleAttrs;
 
-    @Option(name = "-n", aliases = "--namespaces",
-            usage = "remove junk namespaces")
-    private boolean namespaces;
+    // @Option(name = "-n", aliases = "--namespaces",
+    //         usage = "remove junk namespaces")
+    // private boolean namespaces;
 
-    @Option(name = "-w", aliases = "--whitespace",
-            usage = "remove extra whitespace")
-    private boolean whitespace;
+    // @Option(name = "-w", aliases = "--whitespace",
+    //         usage = "remove extra whitespace")
+    // private boolean whitespace;
 
-    @Option(name = "-t", aliases = "--doctype",
-            usage = "remove doctype definition")
-    private boolean doctype;
+    // @Option(name = "-t", aliases = "--doctype",
+    //         usage = "remove doctype definition")
+    // private boolean doctype;
 
-    @Option(name = "-e", aliases = "--empty",
-            usage = "remove empty elements")
-    private boolean empty;
+    // @Option(name = "-e", aliases = "--empty",
+    //         usage = "remove empty elements")
+    // private boolean empty;
 
-    @Option(name = "-l", aliases = "--line-width",
-            usage = "specity line-width")
-    private int lineWidth = 72;
+    // @Option(name = "-l", aliases = "--line-width",
+    //         usage = "specity line-width")
+    // private int lineWidth = 72;
 
     @Argument(usage = "path of SVG image")
     private File file;

@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 
 class RelativizingPathHandler extends CompactingPathHandler {
     @Inject
-    RelativizingPathHandler(int precision) {
+    RelativizingPathHandler(final int precision) {
         super(precision);
     }
 

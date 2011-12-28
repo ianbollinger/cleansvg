@@ -25,7 +25,7 @@ class CompactingPathHandler implements PathHandler {
     private final int precision;
     private final StringBuilder result;
     private final Formatter formatter;
-    
+
     @Inject
     CompactingPathHandler(final int precision) {
         this.precision = precision;
@@ -249,16 +249,15 @@ class CompactingPathHandler implements PathHandler {
         result.append('v').append(stringY);
     }
 
-    
+
 // (1 - t) * P0 + t * P1 = (1 - t)^2 * P0 + 2 * (1 - t) * t * P1 + t^2 * P2
-    
+
 // P0 + P1 = 2 * PH
-    
-// B1(t) = (1 - t)   * P0                                                   + t   * P1
-// B2(t) = (1 - t)^2 * P0 + 2 * (1 - t)   * t * P1                          + t^2 * P2
-// B3(t) = (1 - t)^3 * P0 + 3 * (1 - t)^2 * t * P1 + 3 * (1 - t) * t^2 * P2 + t^3 * P3
-    
-    
+
+// B1(t) = (1 - t)  *P0                                               + t  *P1
+// B2(t) = (1 - t)^2*P0 + 2*(1 - t)   * t*P1                          + t^2*P2
+// B3(t) = (1 - t)^3*P0 + 3*(1 - t)^2 * t*P1 + 3 * (1 - t) * t^2 * P2 + t^3*P3
+
     @Override
     public void movetoAbs(final float x, final float y) {
         positionX = x;

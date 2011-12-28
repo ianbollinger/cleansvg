@@ -17,13 +17,12 @@
 package org.cleansvg;
 
 import static org.junit.Assert.*;
-import org.cleansvg.Formatter;
 import org.junit.Test;
 
 /**
  * @author ian.bollinger@gmail.com (Ian D. Bollinger)
  */
-public final class TestUtil {
+public final class TestFormatter {
     private final Formatter formatter = new Formatter();
 
     @Test
@@ -38,17 +37,12 @@ public final class TestUtil {
         assertEquals("100", formatter.formatFloat(100.0f));
         assertEquals("1E3", formatter.formatFloat(1000.0f));
         assertEquals("1100", formatter.formatFloat(1100.0f));
-        //assertEquals("1100.123", Util.formatFloat(1100.123f));
+        assertEquals("1100.5", formatter.formatFloat(1100.5f));
         assertEquals("11E3", formatter.formatFloat(11000.0f));
         assertEquals("-11E3", formatter.formatFloat(-11000.0f));
         assertEquals("9.765625E-4", formatter.formatFloat(0.0009765625f));
         assertEquals(".0078125", formatter.formatFloat(0.0078125f));
     }
-
-    /*
-     * @Test public void shouldRound() { svg.path :d => "M-3.7,-2.3 l7.1,8.9"
-     * }.elements['path/@d'].value.should == "M-4-2l7,9" }
-     */
 
     @Test
     public void shouldStripTrailingZeros() {

@@ -24,15 +24,18 @@ import org.apache.commons.lang3.StringUtils;
  * @author ian.bollinger@gmail.com (Ian D. Bollinger)
  */
 class Formatter {
-    // TODO: inject;
-    public final int maxFloatDigits;
+    private final int maxFloatDigits;
 
     @Inject
     Formatter() {
         // TODO: inject;
-        this.maxFloatDigits = 16;
+        this(16);
     }
 
+    private Formatter(final int maxFloatDigits) {
+        this.maxFloatDigits = maxFloatDigits;
+    }
+    
     public String formatFloat(final float number) {
         return formatFloat(number, false, maxFloatDigits);
     }
@@ -46,15 +49,7 @@ class Formatter {
         final long longNumber = (long) number;
         final String prefix = (space && number >= 0f) ? " " : "";
         if (longNumber == number) {
-            if (longNumber == 0L || longNumber % 1000L != 0) {
-                return prefix + longNumber;
-            }
-            int i = 3;
-            while (longNumber % (long) Math.pow(10.0, i) == 0L) {
-                ++i;
-            }
-            --i;
-            return prefix + longNumber / (long) Math.pow(10.0, i) + "E" + i;
+            return formatLong(longNumber, prefix);
         }
         if (Math.abs(number) < Math.pow(10.0, -precision)) {
             return space ? " 0" : "0";
@@ -63,5 +58,17 @@ class Formatter {
         final DecimalFormat format = new DecimalFormat(formatString);
         format.setMaximumFractionDigits(precision);
         return prefix + StringUtils.stripEnd(format.format(number), ".");
+    }
+
+    private String formatLong(final long longNumber, final String prefix) {
+        if (longNumber == 0L || longNumber % 1000L != 0) {
+            return prefix + longNumber;
+        }
+        int i = 3;
+        while (longNumber % (long) Math.pow(10.0, i) == 0L) {
+            ++i;
+        }
+        --i;
+        return prefix + longNumber / (long) Math.pow(10.0, i) + "E" + i;
     }
 }

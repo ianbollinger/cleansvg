@@ -47,8 +47,8 @@ class NamedNodeMapAdapter extends AbstractMap<String, String> {
     }
 
     static class Entry implements Map.Entry<String, String> {
-        public final String key;
-        public String value;
+        private final String key;
+        private String value;
 
         @Inject
         Entry(final String key, final String value) {

@@ -17,8 +17,8 @@
 package org.cleansvg;
 import java.util.List;
 import com.google.inject.*;
-import org.kohsuke.args4j.*;
 import org.cleansvg.CommandLineModule.RawOptions;
+import org.kohsuke.args4j.*;
 
 class OptionsProvider implements Provider<OptionsModule> {
     private final List<String> arguments;

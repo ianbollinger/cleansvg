@@ -56,18 +56,18 @@ class SVGModule extends AbstractModule {
         try {
             reader = Files.newReader(file, Charsets.UTF_8);
         } catch (final FileNotFoundException e) {
-            //logger.log(Level.SEVERE, "Cannot open " + fileName + ".", e);
+            // logger.log(Level.SEVERE, "Cannot open " + fileName + ".", e);
             throw new RuntimeException(e);
         }
         final Properties properties = new Properties();
-        //boolean thrown = true;
+        // boolean thrown = true;
         try {
             properties.load(reader);
-            //thrown = false;
+            // thrown = false;
         } catch (final IOException e) {
-            //logger.log(Level.SEVERE, "Cannot read " + fileName + ".", e);
+            // logger.log(Level.SEVERE, "Cannot read " + fileName + ".", e);
         } finally {
-            //Closeables.close(reader, thrown);
+            // Closeables.close(reader, thrown);
             Closeables.closeQuietly(reader);
         }
         return (Map) properties;

@@ -19,8 +19,8 @@ package org.cleansvg;
 import java.io.*;
 import javax.annotation.concurrent.Immutable;
 import com.google.inject.Inject;
-import org.kohsuke.args4j.*;
 import org.cleansvg.CommandLineModule.StandardOutput;
+import org.kohsuke.args4j.*;
 
 @Immutable
 class HelpTask implements Task {

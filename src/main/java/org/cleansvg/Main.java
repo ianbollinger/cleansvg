@@ -17,7 +17,6 @@
 package org.cleansvg;
 
 import com.google.inject.*;
-import org.cleansvg.Task;
 
 /**
  * @author ian.bollinger@gmail.com (Ian D. Bollinger)

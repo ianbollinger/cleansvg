@@ -21,20 +21,12 @@ import com.google.common.collect.*;
 import com.google.inject.Inject;
 import org.cleansvg.SVGModule.Defaults;
 import org.w3c.dom.*;
-import org.w3c.dom.traversal.NodeFilter;
 
 /**
  * @author ian.bollinger@gmail.com (Ian D. Bollinger)
  */
 class Cleaner {
     // TODO: export all this junk to file
-
-    // private final static String PREFIX_CC = "cc";
-    // private final static String PREFIX_DC = "dc";
-    // private final static String PREFIX_RDF = "rdf";
-    // private final static String PREFIX_INKSCAPE = "inkscape";
-    // private final static String PREFIX_SODIPODI = "sodipodi";
-
     private static final Set<String> JUNK_NAMESPACES = ImmutableSet.of(
             "http://web.resource.org/cc/", "http://purl.org/dc/elements/1.1/",
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
@@ -42,9 +34,8 @@ class Cleaner {
             "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd");
     private static final Set<String> REMOVABLE_EMPTY_TAGS = ImmutableSet.of(
             "defs", "g", "metadata");
-
     private final Map<String, String> defaults;
-    private Document document;
+    private SVGDocument document;
 
     @Inject
     Cleaner(@Defaults final Map<String, String> defaults) {
@@ -53,7 +44,7 @@ class Cleaner {
 
     public void process(final Document document) {
         // TODO: this should be injected.
-        this.document = document;
+        this.document = new SVGDocument(document);
         removeJunk();
         firstPass();
         pushDownAttributes();
@@ -62,62 +53,23 @@ class Cleaner {
         removeEmptyGroups();
     }
 
-    public Iterable<Node> nodeIterable(final int filter) {
-        return new FilteredNodeIterable(document, filter);
+    // TODO: rename!
+    private void removeJunk() {
+        for (final Element element : document.getElements()) {
+            if (isRemovable(element)) {
+                document.deleteNode(element);
+            }
+        }
+    }
+
+    private boolean isRemovable(final Attr attr) {
+        return isJunkNamespace(attr) || "id".equals(attr.getName())
+                || attr.getValue().equals(defaults.get(attr.getName()));
     }
 
     private void firstPass() {
-        for (final Node node : nodeIterable(NodeFilter.SHOW_COMMENT
-                | NodeFilter.SHOW_DOCUMENT_TYPE | NodeFilter.SHOW_ELEMENT
-                | NodeFilter.SHOW_TEXT)) {
+        for (final Node node : document.getNodes()) {
             processNode(node);
-        }
-    }
-
-    private void removeEmptyGroups() {
-        for (final Node node : nodeIterable(NodeFilter.SHOW_ELEMENT)) {
-            final Element element = (Element) node;
-            if (isGroup(element) && !element.hasAttributes()) {
-                final Node parent = element.getParentNode();
-                for (final Node child : new ChildNodeIteratable(element)) {
-                    parent.appendChild(child);
-                }
-                deleteNode(element);
-            }
-        }
-    }
-
-    private void pushDownAttributes() {
-        for (final Node node : nodeIterable(NodeFilter.SHOW_ELEMENT)) {
-            final Element element = (Element) node;
-            if (isGroup(element)) {
-                final NodeList children = element.getElementsByTagName("*");
-                if (children.getLength() == 1) {
-                    Element child = (Element) children.item(0);
-                    if (child.getElementsByTagName("*").getLength() > 0) {
-                        continue;
-                    }
-                    element.getParentNode().insertBefore(child, element);
-                    for (final Attr n : new AttrIterable(element.getAttributes())) {
-                        child.setAttributeNode(n);
-                    }
-                    deleteNode(element);
-                }
-            }
-        }
-    }
-
-    private void removeJunk() {
-        for (final Node node : nodeIterable(NodeFilter.SHOW_ELEMENT)) {
-            if (isRemovable((Element) node)) {
-                deleteNode(node);
-            }
-        }
-    }
-
-    private void makeGroupsPass() {
-        for (final Node node : nodeIterable(NodeFilter.SHOW_ELEMENT)) {
-            makeGroups((Element) node);
         }
     }
 
@@ -130,38 +82,66 @@ class Cleaner {
             processText((Text) node);
             return;
         default:
-            deleteNode(node);
+            document.deleteNode(node);
         }
     }
 
     private void processElement(final Element element) {
         if (isJunkNamespace(element)) {
-            deleteNode(element);
+            document.deleteNode(element);
         } else {
             convertStyleAttributes(element);
+            convertColorAttributes(element);
             compactPathAttribute(element);
             processAttributes(element);
         }
     }
 
-    private void processText(final Text text) {
-        if (text.getTextContent().isEmpty()) {
-            deleteNode(text);
-        }
-    }
-
-    private void processAttributes(final Element element) {
-        final List<Attr> attrs = ImmutableList
-                .copyOf(new AttrIterable(element.getAttributes()));
-        for (final Attr attr : attrs) {
-            if (isRemovable(attr)) {
-                element.removeAttributeNode(attr);
+    private void pushDownAttributes() {
+        for (final Element element : document.getElements()) {
+            if (document.isGroup(element)) {
+                final NodeList children = document.getAllChildElements(element);
+                if (children.getLength() == 1) {
+                    final Element child = (Element) children.item(0);
+                    if (document.getAllChildElements(child).getLength() > 0) {
+                        continue;
+                    }
+                    element.getParentNode().insertBefore(child, element);
+                    document.pushDownAttributes(element, child);
+                    document.deleteNode(element);
+                }
             }
         }
     }
 
-    private void deleteNode(final Node node) {
-        node.getParentNode().removeChild(node);
+    private void removeEmptyGroups() {
+        for (final Element element : document.getElements()) {
+            if (document.isGroup(element) && !element.hasAttributes()) {
+                document.pushUpAttributes(element);
+                document.deleteNode(element);
+            }
+        }
+    }
+
+    private void makeGroupsPass() {
+        for (final Element element : document.getElements()) {
+            makeGroups(element);
+        }
+    }
+
+    private void processText(final Text text) {
+        if (text.getTextContent().isEmpty()) {
+            document.deleteNode(text);
+        }
+    }
+
+    private void processAttributes(final Element element) {
+        for (final Attr attr : ImmutableList.copyOf(
+                document.getAttributes(element))) {
+            if (isRemovable(attr)) {
+                element.removeAttributeNode(attr);
+            }
+        }
     }
 
     private void compactPathAttribute(final Element element) {
@@ -185,57 +165,46 @@ class Cleaner {
         element.removeAttribute("style");
     }
 
+    private void convertColorAttributes(final Element element) {
+        // if (!element.hasAttribute("fill")) {
+        //    return;
+        // }
+    }
+
+    // TODO: This method is too complicated.
     private void makeGroups(final Element element) {
         if ("text".equals(element.getTagName())) {
             return;
         }
-        final List<Element> children = Lists.newArrayList();
-        for (final Node child : new ChildNodeIteratable(element)) {
-            if (child instanceof Element) {
-                children.add((Element) child);
-            }
-        }
+        final List<Element> children = document.getDirectChildElements(element);
         final int size = children.size();
         if (size <= 1) {
             return;
         }
         Element a = children.get(0);
-        for (int i = 1; i < size; ++i) {
-            final Element b = children.get(i);
-            final Map<String, String> attrs = new NamedNodeMapAdapter(a);
-            final Map<String, String> attrs1 = new NamedNodeMapAdapter(a);
-            final Map<String, String> attrs2 = new NamedNodeMapAdapter(b);
+        for (final Element b : children.subList(1, size)) {
+            final Map<String, String> attrs = document.getAttributeMap(a);
+            final Map<String, String> attrs1 = document.getAttributeMap(a);
+            final Map<String, String> attrs2 = document.getAttributeMap(b);
             attrs.entrySet().retainAll(attrs2.entrySet());
             attrs.remove("d");
             if (attrs.isEmpty()) {
                 a = b;
                 continue;
             }
-            if (isGroup(a) && attrs1.equals(attrs2)) {
-                for (final String attr : attrs2.keySet()) {
-                    b.removeAttribute(attr);
-                }
+            if (document.isGroup(a) && attrs1.equals(attrs2)) {
+                document.removeAttributes(b, attrs2);
                 a.appendChild(b);
             } else {
-                final Element group = document.createElement("g");
-                for (final Map.Entry<String, String> entry : attrs.entrySet()) {
-                    group.setAttribute(entry.getKey(), entry.getValue());
-                }
+                final Element group = document.createGroup();
+                document.setAttributes(group, attrs);
                 element.insertBefore(group, a);
-                group.appendChild(a);
-                group.appendChild(b);
-                for (final String attr : attrs.keySet()) {
-                    a.removeAttribute(attr);
-                    b.removeAttribute(attr);
-                }
+                document.appendChildren(group, a, b);
+                document.removeAttributes(a, attrs);
+                document.removeAttributes(b, attrs);
                 a = group;
             }
         }
-    }
-
-    private boolean isRemovable(final Attr attr) {
-        return isJunkNamespace(attr) || "id".equals(attr.getName())
-                || attr.getValue().equals(defaults.get(attr.getName()));
     }
 
     private boolean isRemovable(final Element element) {
@@ -249,9 +218,5 @@ class Cleaner {
         final String uri = node.getNamespaceURI();
         // String prefix = node.getPrefix();
         return JUNK_NAMESPACES.contains(uri);
-    }
-
-    private boolean isGroup(final Element element) {
-        return "g".equals(element.getTagName());
     }
 }

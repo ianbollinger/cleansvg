@@ -21,11 +21,11 @@ import com.google.common.collect.AbstractIterator;
 import com.google.inject.Inject;
 import org.w3c.dom.Node;
 
-class ChildNodeIteratable implements Iterable<Node> {
+class ChildNodeIterable implements Iterable<Node> {
     private final Node node;
 
     @Inject
-    ChildNodeIteratable(final Node node) {
+    ChildNodeIterable(final Node node) {
         this.node = node;
     }
 
