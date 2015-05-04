@@ -17,12 +17,10 @@
 package org.cleansvg;
 
 import java.io.*;
-import javax.annotation.concurrent.Immutable;
 import com.google.inject.Inject;
 import org.cleansvg.CommandLineModule.StandardOutput;
 import org.kohsuke.args4j.*;
 
-@Immutable
 class HelpTask implements Task {
     private final CmdLineParser parser;
     private final PrintStream out;
@@ -36,7 +34,7 @@ class HelpTask implements Task {
 
     @Override
     public void run() {
-        out.append("usage: nomegen [options]... FILE\n");
+        out.append("usage: cleansvg [options]... FILE\n");
         parser.printUsage(out);
     }
 }
