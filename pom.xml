@@ -24,7 +24,7 @@
   <packaging>jar</packaging>
   <version>0.0.1-SNAPSHOT</version>
   <name>cleansvg</name>
-  <url>http://code.google.com/p/cleansvg/</url>
+  <url>https://github.com/ianbollinger/cleansvg/</url>
   <inceptionYear>2011</inceptionYear>
 
   <properties>
